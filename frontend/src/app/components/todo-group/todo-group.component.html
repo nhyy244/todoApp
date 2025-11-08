@@ -1,0 +1,70 @@
+<div class="todo-group-container"
+     [style.background-color]="todoGroup.color"
+     [style.width.px]="todoGroup.width || 720"
+     [style.height.px]="todoGroup.height">
+
+  <!-- Group Name Header -->
+  <div class="group-header">
+    <input
+      *ngIf="isEditingName"
+      type="text"
+      class="group-name-input"
+      [(ngModel)]="todoGroup.name"
+      (blur)="finishEditingName()"
+      (keyup.enter)="finishEditingName()"
+      autofocus>
+
+    <h2
+      *ngIf="!isEditingName"
+      class="group-name"
+      (click)="startEditingName()">
+      {{ todoGroup.name }}
+    </h2>
+
+    <!-- Color Picker Button -->
+    <div class="color-picker-button" (click)="toggleColorPicker($event)" title="Change group color">
+      🎨
+    </div>
+
+    <!-- Color Picker Popup -->
+    <div class="color-picker-popup" *ngIf="showColorPicker">
+      <div class="color-picker-header">Choose a color</div>
+      <div class="color-swatches">
+        @for (color of presetColors; track color) {
+          <div
+            class="color-swatch"
+            [style.background-color]="color"
+            [class.selected]="todoGroup.color === color"
+            (click)="changeColor(color)"
+            [title]="color">
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+
+  <!-- Todos List -->
+  <div class="todos-list">
+    @for (todo of todoGroup.todos; track todo.id) {
+      <app-todo
+        [todo]="todo"
+        (todoChanged)="onTodoChanged($event)"
+        (todoDeleted)="onTodoDeleted($event)">
+      </app-todo>
+    }
+  </div>
+
+  <!-- Add Todo Button -->
+  <button class="add-todo-button" (click)="addTodo()" title="Add new todo">
+    + Add Todo
+  </button>
+
+  <!-- Resize Handles -->
+  <div class="resize-handle resize-handle-right"
+       (mousedown)="startResize($event, 'right')"></div>
+  <div class="resize-handle resize-handle-bottom"
+       (mousedown)="startResize($event, 'bottom')"></div>
+  <div class="resize-handle resize-handle-corner"
+       (mousedown)="startResize($event, 'corner')"></div>
+
+</div>

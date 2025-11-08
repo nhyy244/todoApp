@@ -1,0 +1,61 @@
+<style>
+  .toolbar {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    background: white;
+    padding: 15px 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .toolbar h1 {
+    font-size: 24px;
+    color: #333;
+    margin: 0;
+    font-weight: 600;
+  }
+
+  .add-group-button {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    border: none;
+    background-color: #cdeb8b;
+    color: #333;
+    font-size: 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    font-weight: bold;
+  }
+
+  .add-group-button:hover {
+    background-color: #b8d67a;
+    transform: scale(1.05);
+  }
+
+  .instructions {
+    font-size: 14px;
+    color: #666;
+    margin: 0;
+  }
+</style>
+
+<div class="toolbar">
+  <h1>Todo App</h1>
+  <button class="add-group-button" (click)="addGroup()" title="Add new group">+</button>
+  <p class="instructions">Drag groups by their headers • Pan canvas by dragging background</p>
+</div>
+
+<app-canvas
+  [todoGroups]="todoGroups"
+  (groupsChanged)="onGroupsChanged($event)">
+</app-canvas>

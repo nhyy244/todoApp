@@ -1,0 +1,53 @@
+<div class="todo-container"
+     [class.completed]="todo.completed"
+     [class.hovered]="isHovered"
+     (mouseenter)="onMouseEnter()"
+     (mouseleave)="onMouseLeave()">
+
+  <!-- Checkbox -->
+  <div class="checkbox" (click)="toggleCompleted()">
+    <div class="checkmark" *ngIf="todo.completed">✓</div>
+  </div>
+
+  <!-- Text field / Caret -->
+  <input
+    *ngIf="isEditing"
+    type="text"
+    class="todo-input"
+    [(ngModel)]="todo.title"
+    (blur)="finishEditing()"
+    (keyup.enter)="finishEditing()"
+    autofocus>
+
+  <div
+    *ngIf="!isEditing"
+    class="todo-text"
+    [class.completed-text]="todo.completed"
+    (click)="startEditing()">
+    {{ todo.title }}
+  </div>
+
+  <!-- Notepad icon (shows on hover) -->
+  <div class="note-icon"
+       *ngIf="isHovered && !isEditing"
+       (click)="toggleNoteEditor($event)"
+       [class.has-note]="todo.note">
+    📝
+  </div>
+</div>
+
+<!-- Note editor section -->
+<div class="note-section" *ngIf="isEditingNote">
+  <div class="note-header">
+    <span>Note for: {{ todo.title }}</span>
+    <button class="close-note-btn" (click)="toggleNoteEditor($event)">✕</button>
+  </div>
+  <textarea
+    class="note-textarea"
+    [(ngModel)]="todo.note"
+    placeholder="Write your note here..."
+    (blur)="saveNote()"
+    rows="5"
+    autofocus>
+  </textarea>
+</div>

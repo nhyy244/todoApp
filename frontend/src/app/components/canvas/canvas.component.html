@@ -1,0 +1,22 @@
+<div class="canvas-viewport"
+     (mousedown)="onCanvasMouseDown($event)"
+     (mousemove)="onCanvasMouseMove($event)"
+     (mouseup)="onCanvasMouseUp($event)"
+     (mouseleave)="onCanvasMouseUp($event)"
+     (wheel)="onCanvasWheel($event)">
+
+  <div class="canvas-content" [ngStyle]="getCanvasStyle()">
+    @for (group of todoGroups; track group.id) {
+      <div
+        [ngStyle]="getGroupStyle(group)"
+        (mousedown)="onGroupMouseDown($event, group)">
+        <app-todo-group
+          [todoGroup]="group"
+          (groupChanged)="onGroupChanged($event)"
+          (groupDeleted)="onGroupDeleted($event)"
+          (resizeStart)="onResizeStart($event)">
+        </app-todo-group>
+      </div>
+    }
+  </div>
+</div>
