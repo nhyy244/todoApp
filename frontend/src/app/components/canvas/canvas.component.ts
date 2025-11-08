@@ -50,6 +50,12 @@ export class CanvasComponent {
       this.panStartX = event.clientX - this.panX;
       this.panStartY = event.clientY - this.panY;
       event.preventDefault();
+
+      // Blur any focused input to finish editing
+      const activeElement = document.activeElement as HTMLElement;
+      if (activeElement && activeElement.tagName === 'INPUT') {
+        activeElement.blur();
+      }
     }
   }
 
@@ -132,7 +138,12 @@ export class CanvasComponent {
     const target = event.target as HTMLElement;
     const groupHeader = target.closest('.group-header');
 
-    if (groupHeader && event.button === 0) {
+    // Don't start dragging if clicking on the group name (allow editing)
+    const isGroupName = target.classList.contains('group-name') || target.closest('.group-name');
+    const isColorPicker = target.classList.contains('color-picker-button') || target.closest('.color-picker-button');
+    const isColorPickerPopup = target.classList.contains('color-picker-popup') || target.closest('.color-picker-popup');
+
+    if (groupHeader && event.button === 0 && !isGroupName && !isColorPicker && !isColorPickerPopup) {
       this.draggedGroup = group;
       this.dragStartX = event.clientX - (group.x * this.scale) - this.panX;
       this.dragStartY = event.clientY - (group.y * this.scale) - this.panY;

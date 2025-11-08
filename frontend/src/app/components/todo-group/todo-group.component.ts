@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TodoComponent } from '../todo/todo.component';
@@ -11,15 +11,18 @@ import { Todo } from '../../models/todo';
   templateUrl: './todo-group.component.html',
   styleUrl: './todo-group.component.css'
 })
-export class TodoGroupComponent {
+export class TodoGroupComponent implements AfterViewChecked {
   @Input() todoGroup!: TodoGroup;
   @Output() groupChanged = new EventEmitter<TodoGroup>();
   @Output() groupDeleted = new EventEmitter<number>();
   @Output() resizeStart = new EventEmitter<{group: TodoGroup, direction: string, event: MouseEvent, actualWidth: number, actualHeight: number}>();
 
+  @ViewChild('nameInput') nameInput?: ElementRef<HTMLInputElement>;
+
   isEditingName = false;
   nextTodoId = 1;
   showColorPicker = false;
+  private shouldFocusInput = false;
 
   presetColors = [
     '#ffffff', // White
@@ -47,8 +50,19 @@ export class TodoGroupComponent {
     }
   }
 
-  startEditingName(): void {
+  ngAfterViewChecked(): void {
+    if (this.shouldFocusInput && this.nameInput) {
+      this.nameInput.nativeElement.focus();
+      this.nameInput.nativeElement.select();
+      this.shouldFocusInput = false;
+    }
+  }
+
+  startEditingName(event: Event): void {
+    event.stopPropagation();
+    event.preventDefault();
     this.isEditingName = true;
+    this.shouldFocusInput = true;
   }
 
   finishEditingName(): void {

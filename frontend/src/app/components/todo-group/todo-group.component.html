@@ -6,18 +6,18 @@
   <!-- Group Name Header -->
   <div class="group-header">
     <input
+      #nameInput
       *ngIf="isEditingName"
       type="text"
       class="group-name-input"
       [(ngModel)]="todoGroup.name"
       (blur)="finishEditingName()"
-      (keyup.enter)="finishEditingName()"
-      autofocus>
+      (keyup.enter)="finishEditingName()">
 
     <h2
       *ngIf="!isEditingName"
       class="group-name"
-      (click)="startEditingName()">
+      (click)="startEditingName($event)">
       {{ todoGroup.name }}
     </h2>
 
