@@ -4,6 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { TodoComponent } from '../todo/todo.component';
 import { TodoGroup } from '../../models/todo-group';
 import { Todo } from '../../models/todo';
+import { TodoService } from '../../services/todo.service';
+import { TodoGroupService } from '../../services/todo-group.service';
 
 @Component({
   selector: 'app-todo-group',
@@ -23,6 +25,11 @@ export class TodoGroupComponent implements AfterViewChecked {
   nextTodoId = 1;
   showColorPicker = false;
   private shouldFocusInput = false;
+
+  constructor(
+    private todoService: TodoService,
+    private todoGroupService: TodoGroupService
+  ) {}
 
   presetColors = [
     '#ffffff', // White
@@ -68,20 +75,37 @@ export class TodoGroupComponent implements AfterViewChecked {
   finishEditingName(): void {
     this.isEditingName = false;
     if (this.todoGroup.name.trim()) {
-      this.groupChanged.emit(this.todoGroup);
+      this.todoGroupService.updateGroup(this.todoGroup.id, {
+        name: this.todoGroup.name
+      }).subscribe({
+        next: () => {
+          this.groupChanged.emit(this.todoGroup);
+        },
+        error: (error) => {
+          console.error('Error updating group name:', error);
+        }
+      });
     } else {
       this.todoGroup.name = 'Unnamed Group';
     }
   }
 
   addTodo(): void {
-    const newTodo: Todo = {
-      id: this.nextTodoId++,
+    const newTodo = {
       title: 'New Todo',
-      completed: false
+      completed: false,
+      group_id: this.todoGroup.id
     };
-    this.todoGroup.todos.push(newTodo);
-    this.groupChanged.emit(this.todoGroup);
+
+    this.todoService.createTodo(newTodo).subscribe({
+      next: (createdTodo) => {
+        this.todoGroup.todos.push(createdTodo);
+        this.groupChanged.emit(this.todoGroup);
+      },
+      error: (error) => {
+        console.error('Error creating todo:', error);
+      }
+    });
   }
 
   onTodoChanged(updatedTodo: Todo): void {
@@ -93,12 +117,26 @@ export class TodoGroupComponent implements AfterViewChecked {
   }
 
   onTodoDeleted(todoId: number): void {
-    this.todoGroup.todos = this.todoGroup.todos.filter(t => t.id !== todoId);
-    this.groupChanged.emit(this.todoGroup);
+    this.todoService.deleteTodo(todoId).subscribe({
+      next: () => {
+        this.todoGroup.todos = this.todoGroup.todos.filter(t => t.id !== todoId);
+        this.groupChanged.emit(this.todoGroup);
+      },
+      error: (error) => {
+        console.error('Error deleting todo:', error);
+      }
+    });
   }
 
   deleteGroup(): void {
-    this.groupDeleted.emit(this.todoGroup.id);
+    this.todoGroupService.deleteGroup(this.todoGroup.id).subscribe({
+      next: () => {
+        this.groupDeleted.emit(this.todoGroup.id);
+      },
+      error: (error) => {
+        console.error('Error deleting group:', error);
+      }
+    });
   }
 
   toggleColorPicker(event: Event): void {
@@ -109,7 +147,17 @@ export class TodoGroupComponent implements AfterViewChecked {
   changeColor(color: string): void {
     this.todoGroup.color = color;
     this.showColorPicker = false;
-    this.groupChanged.emit(this.todoGroup);
+
+    this.todoGroupService.updateGroup(this.todoGroup.id, {
+      color: color
+    }).subscribe({
+      next: () => {
+        this.groupChanged.emit(this.todoGroup);
+      },
+      error: (error) => {
+        console.error('Error updating group color:', error);
+      }
+    });
   }
 
   startResize(event: MouseEvent, direction: string): void {

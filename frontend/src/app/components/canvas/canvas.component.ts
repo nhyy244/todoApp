@@ -41,6 +41,7 @@ export class CanvasComponent {
   resizeStartHeight = 0;
   resizeStartX = 0;
   resizeStartY = 0;
+  resizeMinHeight = 0;
 
   // Canvas panning
   onCanvasMouseDown(event: MouseEvent): void {
@@ -82,7 +83,7 @@ export class CanvasComponent {
         this.resizingGroup.width = Math.max(300, this.resizeStartWidth + deltaX);
       }
       if (this.resizeDirection === 'bottom' || this.resizeDirection === 'corner') {
-        this.resizingGroup.height = Math.max(200, this.resizeStartHeight + deltaY);
+        this.resizingGroup.height = Math.max(this.resizeMinHeight, this.resizeStartHeight + deltaY);
       }
       event.preventDefault();
     }
@@ -172,6 +173,8 @@ export class CanvasComponent {
     this.resizeStartY = data.event.clientY;
     this.resizeStartWidth = data.actualWidth;
     this.resizeStartHeight = data.actualHeight;
+    // Use actual content height as minimum (the current height without explicit height set)
+    this.resizeMinHeight = data.actualHeight;
   }
 
   getGroupStyle(group: TodoGroup): any {

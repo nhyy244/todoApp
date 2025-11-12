@@ -9,13 +9,18 @@
   border-radius: 8px;
   margin-bottom: 10px;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
   position: relative;
   box-sizing: border-box;
 }
 
 .todo-container.hovered {
   background-color: rgba(245, 245, 245, 0.6);
+}
+
+.todo-container.delete-hovered {
+  background-color: rgba(255, 220, 220, 0.6);
+  border-color: #e8b4b4;
 }
 
 .todo-container.completed {
@@ -70,11 +75,19 @@
   min-height: 24px;
   display: flex;
   align-items: center;
+  transition: text-decoration 0.3s ease, color 0.3s ease;
 }
 
 .todo-text.completed-text {
   text-decoration: line-through;
   color: #999999;
+}
+
+.todo-text.delete-preview {
+  text-decoration: line-through;
+  text-decoration-color: #c85050;
+  text-decoration-thickness: 2px;
+  color: #8b4545;
 }
 
 /* Caret appears on hover when editing */
@@ -87,6 +100,24 @@
 @keyframes blink {
   0%, 50% { opacity: 1; }
   51%, 100% { opacity: 0; }
+}
+
+/* Delete icon */
+.delete-icon {
+  position: absolute;
+  right: 50px;
+  font-size: 20px;
+  opacity: 0.7;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 4px;
+}
+
+.delete-icon:hover {
+  opacity: 1;
+  background-color: rgba(255, 200, 200, 0.5);
+  transform: scale(1.1);
 }
 
 /* Notepad icon */

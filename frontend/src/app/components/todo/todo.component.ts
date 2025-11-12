@@ -2,6 +2,7 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Todo } from '../../models/todo';
+import { TodoService } from '../../services/todo.service';
 
 @Component({
   selector: 'app-todo',
@@ -17,10 +18,25 @@ export class TodoComponent {
   isEditing = false;
   isHovered = false;
   isEditingNote = false;
+  isDeleteHovered = false;
+
+  constructor(private todoService: TodoService) {}
 
   toggleCompleted(): void {
     this.todo.completed = !this.todo.completed;
-    this.todoChanged.emit(this.todo);
+
+    this.todoService.updateTodo(this.todo.id, {
+      completed: this.todo.completed
+    }).subscribe({
+      next: () => {
+        this.todoChanged.emit(this.todo);
+      },
+      error: (error) => {
+        console.error('Error updating todo:', error);
+        // Revert the change on error
+        this.todo.completed = !this.todo.completed;
+      }
+    });
   }
 
   toggleNoteEditor(event: Event): void {
@@ -30,7 +46,17 @@ export class TodoComponent {
 
   saveNote(): void {
     this.isEditingNote = false;
-    this.todoChanged.emit(this.todo);
+
+    this.todoService.updateTodo(this.todo.id, {
+      note: this.todo.note
+    }).subscribe({
+      next: () => {
+        this.todoChanged.emit(this.todo);
+      },
+      error: (error) => {
+        console.error('Error updating todo note:', error);
+      }
+    });
   }
 
   startEditing(): void {
@@ -42,7 +68,16 @@ export class TodoComponent {
   finishEditing(): void {
     this.isEditing = false;
     if (this.todo.title.trim()) {
-      this.todoChanged.emit(this.todo);
+      this.todoService.updateTodo(this.todo.id, {
+        title: this.todo.title
+      }).subscribe({
+        next: () => {
+          this.todoChanged.emit(this.todo);
+        },
+        error: (error) => {
+          console.error('Error updating todo title:', error);
+        }
+      });
     }
   }
 
@@ -56,5 +91,13 @@ export class TodoComponent {
 
   onMouseLeave(): void {
     this.isHovered = false;
+  }
+
+  onDeleteMouseEnter(): void {
+    this.isDeleteHovered = true;
+  }
+
+  onDeleteMouseLeave(): void {
+    this.isDeleteHovered = false;
   }
 }

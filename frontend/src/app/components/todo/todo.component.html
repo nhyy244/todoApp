@@ -1,6 +1,7 @@
 <div class="todo-container"
      [class.completed]="todo.completed"
      [class.hovered]="isHovered"
+     [class.delete-hovered]="isDeleteHovered"
      (mouseenter)="onMouseEnter()"
      (mouseleave)="onMouseLeave()">
 
@@ -23,15 +24,27 @@
     *ngIf="!isEditing"
     class="todo-text"
     [class.completed-text]="todo.completed"
+    [class.delete-preview]="isDeleteHovered"
     (click)="startEditing()">
     {{ todo.title }}
+  </div>
+
+  <!-- Delete icon (shows on hover) -->
+  <div class="delete-icon"
+       *ngIf="isHovered && !isEditing"
+       (click)="deleteTodo()"
+       (mouseenter)="onDeleteMouseEnter()"
+       (mouseleave)="onDeleteMouseLeave()"
+       title="Delete todo">
+    ✕
   </div>
 
   <!-- Notepad icon (shows on hover) -->
   <div class="note-icon"
        *ngIf="isHovered && !isEditing"
        (click)="toggleNoteEditor($event)"
-       [class.has-note]="todo.note">
+       [class.has-note]="todo.note"
+       title="Add note">
     📝
   </div>
 </div>
