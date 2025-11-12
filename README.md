@@ -1,1 +1,1 @@
-fully vibe coded todo app using claude code
+fully vibe coded todo webapp using claude code
